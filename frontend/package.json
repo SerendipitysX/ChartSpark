@@ -1,0 +1,40 @@
+{
+  "name": "vue3-fabric-editor",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.17",
+    "@chakra-ui/react": "^2.5.1",
+    "@element-plus/icons-vue": "2.0.10",
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
+    "element-plus": "2.2.21",
+    "events": "^3.3.0",
+    "fabric": "^5.2.4",
+    "fontfaceobserver": "^2.3.0",
+    "hotkeys-js": "^3.10.1",
+    "mitt": "^3.0.0",
+    "pinia": "^2.0.28",
+    "uuid": "^9.0.0",
+    "vue": "3.2.45",
+    "vue-clipboard3": "^2.0.0",
+    "vue-i18n": "^9.3.0-beta.14",
+    "vue-router": "4.1.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vue/compiler-sfc": "3.2.45",
+    "less": "^4.0.0",
+    "unplugin-auto-import": "0.11.4",
+    "vite": "^4.0.0",
+    "vite-plugin-compression": "0.5.1",
+    "vite-plugin-svg-icons": "2.0.1",
+    "vite-plugin-vue-setup-extend": "0.4.0"
+  }
+}
