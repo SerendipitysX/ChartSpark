@@ -29,11 +29,11 @@ Done:
 - Unconditional & conditional generation
 
 ## **Data Corpus**
-We collected 683 pictorial visualization in total, which can be find [here](https://drive.google.com/drive/folders/11ELKOwPXb92hXiYgG46_Dcw1cfIHh5p_?usp=share_link)
-- Foreground internal single: 394
-- Foreground internal multiple: 299
-- Foreground external: 104
-- Background: 66
+We collected 689 pictorial visualization in total, which can be find [here](https://drive.google.com/drive/folders/11ELKOwPXb92hXiYgG46_Dcw1cfIHh5p_?usp=share_link)
+- Foreground internal single: 395
+- Foreground internal multiple: 290
+- Foreground external: 121
+- Background: 63
 
 ## **Dependencies and Installation**
 
