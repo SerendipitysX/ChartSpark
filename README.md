@@ -4,9 +4,11 @@ This repository contains the code of *ChartSpark*, a novel system that embeds se
 *ChartSpark* generates pictorial visualizations conditioned on both semantic context conveyed in textual inputs and data information embedded in plain charts. The method is generic for both foreground and background pictorial generation, satisfying the design practices identified from an empirical research into existing pictorial visualizations.
 We further develop an interactive visual interface that integrates a text analyzer, editing module, and evaluation module to enable users to generate, modify, and assess pictorial visualizations.
 
-![teaser.png](teaser.png)
+![teaser.png](asset/teaser.png)
 
-![interface.png](interface.png)
+![interface.png](asset/interface.png)
+
+![case.png](asset/case.png)
 
 ## Code release progress:
 
