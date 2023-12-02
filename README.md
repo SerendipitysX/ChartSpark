@@ -57,3 +57,6 @@ To use these models, please follow the steps below:
 ## **Contact**
 
 We are glad to hear from you. If you have any questions, please feel free to contact [xrakexss@gmail.com](mailto:xrakexss@gmail.com) or open issues on this repository.
+
+## **Acknowledgement**
+Thanks for the great interface reference in https://github.com/nihaojob/vue-fabric-editor
