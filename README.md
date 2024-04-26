@@ -5,9 +5,6 @@ This repository contains the code of *ChartSpark*, a novel system that embeds se
 We further develop an interactive visual interface that integrates a text analyzer, editing module, and evaluation module to enable users to generate, modify, and assess pictorial visualizations.
 
 <!-- ![teaser.png](asset/teaser.png) -->
-
-![interface.png](asset/interface.png)
-
 ![case.png](asset/case.png)
 
 ## **Dependencies and Installation**
@@ -43,7 +40,7 @@ npm install
 ```
 npm run dev
 ```
-
+![interface.png](asset/interface.png)
 ## Contact
 
 We are glad to hear from you. If you have any questions, please feel free to contact [xrakexss@gmail.com](mailto:xrakexss@gmail.com) or open issues on this repository.
