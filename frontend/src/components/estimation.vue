@@ -12,20 +12,17 @@
     <h3 class="background"><span>EVALUATION</span></h3>
     <!-- <el-progress :percentage="100" :format="format"></el-progress> -->
 
-    <div class="content" style="display: flex; flex-direction: row; position: relative;"> 
-      <!-- <div class="container"> -->
+    <div class="content" style="display: flex; flex-direction: row; position: relative;">
+      <!-- <div class="eval_info"> -->
         <div class="img_container" style="position: relative;">
-          <img :src=imgSrc>
+          <img id="myImage" :src=imgSrc>
         </div>
-        <button class="value" v-if="show" style="position: absolute; top: 0; right: 100;">{{ value_estimation }}</button> 
-        <!-- <div class="progress_container">
-          <el-progress :percentage="100" :format="format"></el-progress>
-        </div> -->
+        <button class="value" v-if="show" style="position: absolute; top: 0; right: 100;">{{ value_estimation }}</button>
       <!-- </div> -->
 
       <div class="fourtypes" style="display: flex; flex-direction: column;">
 
-        <button class="btn_e" :class="{ active: isEvaluateBar }" @click="toggleButtonBar">
+        <button class="btn_e" @click="clickButtonBar">
           <svg t="1677853487870" class="icon" style="width: 30px; height: 30px;" viewBox="0 0 1024 1024" version="1.1"
             xmlns="http://www.w3.org/2000/svg" p-id="5337" xmlns:xlink="http://www.w3.org/1999/xlink">
             <path
@@ -46,7 +43,7 @@
           </svg>
         </button>
 
-        <button class="btn_e" :class="{ active: isEvaluatePie }" @click="toggleButtonPie">
+        <button class="btn_e" @click="clickButtonPie">
           <svg t="1677722625184" class="icon" style="width: 30px; height: 30px;" viewBox="0 0 1024 1024" version="1.1"
             xmlns="http://www.w3.org/2000/svg" p-id="8201" xmlns:xlink="http://www.w3.org/1999/xlink">
             <path
@@ -75,6 +72,8 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n'
+import { useGenerateStore } from '../store/modules/generateStore';
+import { startEvaluate } from '../service/dataService';
 const { t } = useI18n()
 let mSelectMode = inject('mSelectMode')
 let mSelectId = inject('mSelectId')
@@ -84,13 +83,74 @@ let isEvaluateBar = ref(false);
 let isEvaluateLine = ref(false);
 let isEvaluatePie = ref(false);
 let isEvaluateScatter = ref(false);
+let imgSrc = ref('/src/assets/generation/estimation/default.png')
 const value_estimation = ref(94.5);
-const show = ref(false)
+let show = ref(false)
+let count = ref(0)
 
+const store = useGenerateStore()
+const eventBus = inject("eventBus")
+
+function clickButtonBar() {
+  var activeObj = canvas.c.getActiveObject();
+  localStorage.setItem('activeObj', JSON.stringify(activeObj));
+  var dataURL = JSON.parse(localStorage.getItem('activeObj'));
+  let param = { "type": "Bar", "mask_path": store.maskPath, "image_data": dataURL, "count": count.value };
+  console.log(param)
+  startEvaluate(param, function (data) {
+    // data:json
+    console.log("======estimation=======")
+    console.log(data)
+    show.value = true;
+    value_estimation.value = data.score_eval;
+    // imgSrc.value = '/src/assets/evaluation/evaluation.png';
+    var imgElement = document.getElementById('myImage');
+    imgElement.src = data.eval_img_path
+    count.value = count.value + 1;
+  });
+}
+
+function clickButtonLine() {
+  var activeObj = canvas.c.getActiveObject();
+  localStorage.setItem('activeObj', JSON.stringify(activeObj));
+  var dataURL = JSON.parse(localStorage.getItem('activeObj'));
+  let param = { "type": "Line", "mask_path": store.maskPath, "image_data": dataURL, "count": count.value };
+  console.log(param)
+  startEvaluate(param, function (data) {
+    // data:json
+    console.log("======estimation=======")
+    console.log(data)
+    show.value = true;
+    value_estimation.value = data.score_eval;
+    // imgSrc.value = '/src/assets/evaluation/evaluation.png';
+    var imgElement = document.getElementById('myImage');
+    imgElement.src = data.eval_img_path
+    count.value = count.value + 1;
+  });
+}
+
+function clickButtonPie() {
+  var activeObj = canvas.c.getActiveObject();
+  localStorage.setItem('activeObj', JSON.stringify(activeObj));
+  var dataURL = JSON.parse(localStorage.getItem('activeObj'));
+  let param = { "type": "Pie", "mask_path": store.maskPath, "image_data": dataURL, "count": count.value };
+  console.log(param)
+  startEvaluate(param, function (data) {
+    // data:json
+    console.log("======estimation=======")
+    console.log(data)
+    show.value = true;
+    value_estimation.value = data.score_eval;
+    // imgSrc.value = '/src/assets/evaluation/evaluation.png';
+    var imgElement = document.getElementById('myImage');
+    imgElement.src = data.eval_img_path
+    count.value = count.value + 1;
+  });
+}
 
 // function clickButtonLine() {
 //   setTimeout(() => {
-//     imgSrc.value = '/src/assets/generation/estimation/estimation.png';
+//     imgSrc.value = '/src/assets/estimation/estimation.png';
 //     show.value = true;
 //     console.log(123445)
 //   }, 1000);
@@ -249,8 +309,14 @@ h3.background {
   flex-direction: row;
 }
 
+.eval_info {
+  // width: 80%;
+  // display: flex;
+  align-items: center;
+}
+
 .img_container {
-  width: 80%;
+  width: 90%;
   height: auto;
   display: flex;
   justify-content: center;
@@ -258,30 +324,31 @@ h3.background {
 }
 
 .img_container img {
-  max-width: 95%;
-  height: auto;
+  max-width: 85%;
+  max-height: 85%;
 }
 
-.progress_container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
+// .progress_container {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   height: 100%;
+// }
 
 .value {
-  margin-left: 170px;
-  margin-top: 130px;
-  background-color: #ffffff;
+  margin-left: 190px;
+  margin-top: 60px;
+  background-color: rgba(255, 255, 255, 0.2);
+  // background-color: rgba(218, 218, 218, 0.2);
   border: 3px solid #4f96f3;
   border-radius: 50%;
   color: rgb(58, 58, 58);
   padding: 4px 4px;
-  font-size: 16px;
+  font-size: 13px;
   cursor: pointer;
-  margin-right: 8px;
+  margin-right: -20px;
   margin-bottom: 10px;
-  height: 50px;
-  width: 50px;
+  height: 42px;
+  width: 42px;
 }
 </style>

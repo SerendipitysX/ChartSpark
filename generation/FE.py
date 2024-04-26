@@ -1,7 +1,7 @@
 from typing import Optional, Union, Tuple, List, Callable, Dict
 import numpy as np
 import abc
-import utils
+# import utils
 from tqdm.notebook import tqdm
 import torch
 from diffusers import StableDiffusionPipeline, DDIMScheduler
@@ -31,13 +31,9 @@ if module_path not in sys.path:
 from mask.bg_removal import bg_removal
 
 def text2img_element(pipe_text2img, prompt):
-    # prompt = "top view of a single pumpkin, close up"
-    # prompt = "A single blueberry, round, sweet fruit with a blue-black skin and juicy flesh that is high in antioxidants."
-    # prompt = "A single bluberry, close up"
-    # images = pipe_img2img(prompt=prompt, image=init_image, strength=0.75, guidance_scale=7.5).images
     image_text2img = pipe_text2img(prompt=prompt, width=512, height=512, guidance_scale=7.5).images[0]
     num = random.randint(0, 100)
-    image_text2img.save("D:/speak/generation/output/"+prompt+str(num)+".png")
+    image_text2img.save("C:/Users/user/A-project/speak/generation/output/"+prompt+str(num)+".png")
     return image_text2img
 
 def extract_element(image_text2img):

@@ -100,8 +100,8 @@
 
     <h3 class="background"><span>Raw Data</span></h3>
     <div style="margin:-2px">
-      <img :src="imgSrc" alt="preview of raw data" style="max-width: 80%; height: auto;
-        display: flex; justify-content: center; margin-left: 25px; margin-top: -12px; align-items: center;">
+      <img :src="imgSrc" alt="preview of raw data" style="max-width: 75%; height: auto;
+        display: flex; justify-content: center; margin-left: 35px; margin-top: -12px; align-items: center;">
     </div>
 
   </div>
@@ -110,7 +110,7 @@
     <h3 class="background"><span>Theme</span></h3>
     <div style="margin-top:-12px">
       <img :src='imgSrcTheme' alt="theme of data"
-        style="max-width: 90%; height: auto; border-radius: 7px;margin-left: 10px;">
+        style="max-width: 90%; height: auto; border-radius: 7px;margin-left: 10px;margin-top: 10px;">
     </div>
   </div>
 </template>
@@ -245,11 +245,16 @@ function toggleButtonPreview() {
     console.log(y_min.value)
     let param = { "chart-type": "bar", "aspect-ratio": selectedValue, "y_min": y_min.value, "y_max": y_max.value, "bar_width": barWidth.value, "data": storeJson.jsonData }
     sendChart(param, function (data) {
-      // console.log(data)
       // 显示图表
+      store.mask_path_foreground = data[2]
+      store.mask_path_background = data[3]
       imgSrc.value = '/src/assets/preview/bar_preview.png'
       imgSrcTheme.value = '/src/assets/wordcloud/wc.png'
-      // imgSrc.value = data[0]
+      fabric.loadSVGFromURL('/src/assets/preview/plot.svg', function (objects, options) {
+        var svgObject = fabric.util.groupSVGElements(objects, options);
+        svgObject.id = "data preview";
+        canvas.c.add(svgObject);
+      });
     });
   }
   if (isActivePreview.value == true && isActiveLine.value == true) {
@@ -263,15 +268,10 @@ function toggleButtonPreview() {
     sendChart(param, function (data) {
       console.log(data)
       // 显示图表
+      store.mask_path_foreground = data[2]
+      store.mask_path_background = data[3]
       imgSrc.value = '/src/assets/preview/line_preview.png'
       imgSrcTheme.value = '/src/assets/wordcloud/wc.png'
-
-      // fabric.Image.fromURL(imgSrc.value, function (imgInstance) {
-      //   imgInstance.set({  // 设置图片属性
-      //     name: "data preview" // 添加名字
-      //   });
-      //   canvas.c.add(imgInstance);
-      // });
 
       fabric.loadSVGFromURL('/src/assets/preview/plot.svg', function (objects, options) {
         var svgObject = fabric.util.groupSVGElements(objects, options);
@@ -290,10 +290,16 @@ function toggleButtonPreview() {
     console.log(selectedValue);
     let param = { "chart-type": "pie", "aspect-ratio": selectedValue, "bar_width": [], "data": storeJson.jsonData }
     sendChart(param, function (data) {
-      console.log(data)
+      store.mask_path_foreground = data[2]
+      store.mask_path_background = data[3]
       // 显示图表
       imgSrc.value = '/src/assets/preview/pie_preview.png'
       imgSrcTheme.value = '/src/assets/wordcloud/wc.png'
+      fabric.loadSVGFromURL('/src/assets/preview/plot.svg', function (objects, options) {
+        var svgObject = fabric.util.groupSVGElements(objects, options);
+        svgObject.id = "data preview";
+        canvas.c.add(svgObject);
+      });
     });
   }
   if (isActivePreview.value == true && isActiveScatter.value == true) {
@@ -305,8 +311,15 @@ function toggleButtonPreview() {
     let param = { "chart-type": "scatter", "aspect-ratio": selectedValue, "bar_width": [], "data": storeJson.jsonData }
     sendChart(param, function (data) {
       // 显示图表
+      store.mask_path_foreground = data[2]
+      store.mask_path_background = data[3]
       imgSrc.value = '/src/assets/preview/scatter_preview.png'
       imgSrcTheme.value = '/src/assets/wordcloud/wc.png'
+      fabric.loadSVGFromURL('/src/assets/preview/plot.svg', function (objects, options) {
+        var svgObject = fabric.util.groupSVGElements(objects, options);
+        svgObject.id = "data preview";
+        canvas.c.add(svgObject);
+      });
     });
   }
 }
@@ -352,7 +365,7 @@ function toggleButtonPreview() {
 
 .settings {
   width: 100%;
-  height: 14%;
+  height: 16%;
   margin-top: -33px;
   background: #fff;
   position: relative;

@@ -29,7 +29,7 @@
       <!-- <flip></flip> -->
       <div style=" float:right;">
         <!-- <zoom></zoom>&nbsp; &nbsp; -->
-        <!-- <lang /> -->
+        <lang />
         <save></save>
       </div>
     </el-header>
@@ -233,21 +233,21 @@ const windowsLoadEvt = (canvas) => {
     canvas.isDragging = false
   })
 
-  canvas.on('mouse:wheel', opt => {
-    let delta = opt.e.deltaY // 滚轮，向上滚一下是 -100，向下滚一下是 100
-    let zoom = canvas.getZoom() // 获取画布当前缩放值
-    zoom *= 0.999 ** delta
-    if (zoom > 5) zoom = 5
-    if (zoom < 0.5) zoom = 0.5
-    canvas.zoomToPoint({ // 关键点
-      x: opt.e.offsetX,
-      y: opt.e.offsetY
-    },
-      zoom
-    )
-    opt.e.preventDefault()
-    opt.e.stopPropagation()
-  })
+  // canvas.on('mouse:wheel', opt => {
+  //   let delta = opt.e.deltaY // 滚轮，向上滚一下是 -100，向下滚一下是 100
+  //   let zoom = canvas.getZoom() // 获取画布当前缩放值
+  //   zoom *= 0.999 ** delta
+  //   if (zoom > 5) zoom = 5
+  //   if (zoom < 0.5) zoom = 0.5
+  //   canvas.zoomToPoint({ // 关键点
+  //     x: opt.e.offsetX,
+  //     y: opt.e.offsetY
+  //   },
+  //     zoom
+  //   )
+  //   opt.e.preventDefault()
+  //   opt.e.stopPropagation()
+  // })
 }
 
 //添加鼠标事件

@@ -8,15 +8,6 @@ import os
 from skimage.metrics import structural_similarity as ssim
 import matplotlib.pyplot as plt
 current_path = os.getcwd()
-sys.path.append(os.path.join(current_path, 'mask'))
-from bg_removal import bg_removal
-
-# def approximate_gcd(numbers):
-#     total_remainders = {}
-#     for n in numbers:
-#         for i in range(10, math.isqrt(n) + 1):
-#             total_remainders[i] = total_remainders.get(i, 0) + n % i
-#     return min(total_remainders, key=total_remainders.get)
 
 split_num = 5
 
@@ -42,25 +33,28 @@ def approximate_gcd(nums):
         magic_thr = min_num if min_num<=20 else max_num//split_num
     return magic_thr
 
-# img2gray -> findcontour -> bonding rect
-def get_box_img(img_removal):
+def get_box_img(image):
     '''get box of correct object and get the total_h(h_total)'''
-    img_removal = np.array(img_removal)
+    img_removal = np.array(image)
     imgray = cv2.cvtColor(img_removal, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(imgray, 30, 255, 0)
     cv2.imwrite('output/grid/thresh.png', thresh)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    area_highest = 0
-    for cntr in contours:
-        x,y,w,h = cv2.boundingRect(cntr)
-        if w*h > area_highest:   # find the highest area 默认我们要生成的是面积最大的
-            x_gen, y_gen, w_gen, h_total = x,y,w,h
-            area_highest = w*h
+    left, top, right, bottom = image.width, image.height, 0, 0 
+    for x in range(image.width): 
+        for y in range(image.height): 
+            if image.getpixel((x, y))[3] != 0: 
+                left = min(left, x) 
+                top = min(top, y) 
+                right = max(right, x) 
+                bottom = max(bottom, y) 
+    y_gen = top
+    x_gen = left
+    h_total = bottom - top
+    w_gen = right- left
 
-    # img_removal_correct指的是bar上生成的东西 其他的咱们不要
     img_removal_correct = img_removal[y_gen:y_gen+h_total,x_gen:x_gen+w_gen]
-    print(img_removal_correct.shape)
     cv2.imwrite('output/grid/img_removal_correct.png', cv2.cvtColor(img_removal_correct, cv2.COLOR_RGB2BGRA))
     return img_removal_correct, h_total, img_removal_correct.shape
 
@@ -102,18 +96,3 @@ def get_grid_meta(grid_dict, sort_idx_array):
     # get_grid_meta
     grid_meta = grid_img_list[sort_idx_array[0]]
     return grid_meta, grid_img_list
-
-# image_path = current_path+'/data/a_carrot.png'
-# # bg removal
-# img = Image.open(image_path)
-# img_removal = bg_removal(img)
-# # get box of correct object and get the total_h(h_total)
-# img_removal_correct, h_total = get_box_img(img_removal)
-# # cut
-# grid_dict, h_grid = get_grid(img_removal_correct, h_total)
-# # get similarity matrix
-# sim_matrix = np.ones((split_num, split_num))
-# sort_idx_array, sim_mean = ssim_matrix_compute(grid_dict, sim_matrix)
-# # show all grid and meta_grid
-# grid_meta, grid_img_list = get_grid_meta(grid_dict, sort_idx_array)
-

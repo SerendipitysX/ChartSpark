@@ -1,12 +1,10 @@
 from typing import Optional, Union, Tuple, List, Callable, Dict
 import numpy as np
 import abc
-import utils
 from tqdm.notebook import tqdm
 import torch
 from diffusers import StableDiffusionPipeline, DDIMScheduler
 import torch.nn.functional as nnf
-# import seq_aligner
 import shutil
 from torch.optim.adam import Adam
 from PIL import Image
@@ -31,13 +29,9 @@ if module_path not in sys.path:
 from mask.bg_removal import bg_removal
 
 def text2img_func(pipe_text2img, prompt, figure_size):
-    # prompt = "top view of a single pumpkin, close up"
-    # prompt = "A single blueberry, round, sweet fruit with a blue-black skin and juicy flesh that is high in antioxidants."
-    # prompt = "A single bluberry, close up"
-    # images = pipe_img2img(prompt=prompt, image=init_image, strength=0.75, guidance_scale=7.5).images
     image_text2img = pipe_text2img(prompt=prompt, width=figure_size[0], height=figure_size[1], guidance_scale=7.5).images[0]
     num = random.randint(0, 100)
-    image_text2img.save("D:/speak/generation/output/"+prompt+str(num)+".png")
+    image_text2img.save("C:/Users/user/A-project/speak/generation/output/"+prompt+str(num)+".png")
     return image_text2img
 
 def image_grid(imgs, rows, cols):
@@ -72,8 +66,6 @@ def get_attetnion_crop(bar_image,image_text2img):
     cntr = get_locate(bar_image)
     x,y,w,h = cv2.boundingRect(cntr)
     img_blend = img_blend.crop((x,y,x+w,y+h))
-    img_blend # 只有bar的那一部分
-    ### 放在黑底背景上
     im_bg = Image.new("RGB", (512, 512),color="black")
     # resize the object to maintain the detail
     # resize to 512 if we need generate
@@ -95,11 +87,9 @@ def img2img_func(pipe_img2img, prompt, im_bg, num_images):
     n_propmt = "blurry, watermark, text, signature, frame, cg render, lights"
     output = pipe_img2img(prompt = prompt, image=im_bg, strength=0.7, guidance_scale=7.5, 
                         generator=generator, num_images_per_prompt=num_images, return_dict=True)
-    # images.insert(0, init_image)
     images = output.images
     nfsw_checker = output.nsfw_content_detected
     images_img2img = [images[i] for i in range(len(nfsw_checker)) if not nfsw_checker[i]]
-    # images_r = image_grid(images_img2img, 1, len(images_img2img))
     return images_img2img
 
 def depth2img_func(pipe_depth, prompt, im_bg, num_images):

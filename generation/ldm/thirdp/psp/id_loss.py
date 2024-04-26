@@ -1,7 +1,7 @@
 # https://github.com/eladrich/pixel2style2pixel
 import torch
 from torch import nn
-from ldm.thirdp.psp.model_irse import Backbone
+from generation.ldm.thirdp.psp.model_irse import Backbone
 
 
 class IDFeatures(nn.Module):

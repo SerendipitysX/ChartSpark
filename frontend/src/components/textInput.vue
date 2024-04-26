@@ -43,17 +43,30 @@
     </div>
 
     <div style="margin-left: 0px; margin-bottom: 5px; display: flex;  ">
-      <button class="embed-fore-ex-rect" :class="{ active: isActiveFE }" @click="toggleButtonFE">
+      <button class="embed-fore-ex-rect" :class="{ active: isActiveF }" @click="toggleButtonF">
         <strong>F</strong>oreground&nbsp;
         <!-- <strong>E</strong>xternal -->
       </button>
     </div>
 
     <div style="margin-left: 0px; margin-bottom: 5px; display: flex; ">
-      <button class="embed-bg-rect" :class="{ active: isActiveBG }" @click="toggleButtonBG">
-        <strong>B</strong>ackground
-        <!-- <strong>g</strong>round -->
-      </button>
+      <button class="embed-bg-rect" :class="{ active: isActiveB }" @click="toggleButtonBG">
+      <strong>B</strong>ackground
+      <!-- <strong>g</strong>round -->
+    </button>
+  </div>
+
+  <div style="margin-left: 0px; margin-bottom: 5px; display: flex; ">
+    <div class="mask-container">
+        <!-- <input type="checkbox" class="button-mask" id="mask1">
+              <label for="mask1"><img src="src\assets\mask\pie\foreground\mask_0.png"></label>
+
+              <input type="checkbox" class="button-mask" id="mask2">
+              <label for="mask2"><img src="src\assets\mask\pie\foreground\mask_1.png"></label>
+
+              <input type="checkbox" class="button-mask" id="mask3">
+              <label for="mask3"><img src="src\assets\mask\pie\foreground\mask_2.png"></label> -->
+      </div>
     </div>
 
 
@@ -71,35 +84,41 @@ import { useI18n } from 'vue-i18n'
 import { ref } from 'vue';
 import mitt from 'mitt';
 // import { EventBus } from '/src/core/eventBus/index.js';
-import { useGenerateStore } from '../store/modules/generateStore';
+import { useGenerateStore } from '../store/modules/generateStore'; 
 import { useSettingStore } from '../store/modules/settingStore';
 import { startGenerate } from '../service/dataService';
+import { px } from 'framer-motion';
+// import { fs } from 'fs'
+// import { path } from 'path'
+// const fs = require('fs');
+// const path = require('path');
 
 // Get references to the textareas
-let isActiveFE = ref(false);
-let isActiveFIS = ref(false);
-let isActiveFIM = ref(false);
-let isActiveBG = ref(false);
+let isActiveF = ref(false);
+let isActiveB = ref(false);
 let isActiveCon = ref(false);
 let isActiveUNCon = ref(false);
 let isActiveGenerate = ref(false)
+let has_show_mask_foreground = ref(false)
+let has_show_mask_background = ref(false)
 
 const store = useGenerateStore()
 const storeSetting = useSettingStore()
 const eventBus = inject("eventBus")
 
 
-function toggleButtonFE() {
-  isActiveFE.value = !isActiveFE.value;
-  if (isActiveFE.value === true) {
-    isActiveFIS.value = isActiveFIM.value = isActiveBG.value = false;
+function toggleButtonF() {
+  isActiveF.value = !isActiveF.value;
+  if (isActiveF.value === true) {
+    isActiveB.value = false;
   }
+  checkBothButtonsClicked()
 }
 
 function toggleButtonBG() {
-  isActiveBG.value = !isActiveBG.value;
-  if (isActiveBG.value === true) {
-    isActiveFIS.value = isActiveFIM.value = isActiveFE.value = false;
+  isActiveB.value = !isActiveB.value;
+  if (isActiveB.value === true) {
+    isActiveF.value = false;
   }
 }
 
@@ -108,6 +127,7 @@ function toggleButtonCon() {
   if (isActiveCon.value === true) {
     isActiveUNCon.value = false;
   }
+  checkBothButtonsClicked()
 }
 
 function toggleButtonUNCon() {
@@ -117,21 +137,36 @@ function toggleButtonUNCon() {
   }
 }
 
-
 const generationStateList = []
 
 function clickButtonGenerate() {
   let objectTextarea = document.getElementById("object").value;
   let descriptionTextarea = document.getElementById("description").value;
   const chart_type = [storeSetting.isActiveBar, storeSetting.isActiveLine, storeSetting.isActivePie, storeSetting.isActiveScatter]
-  if (isActiveFE.value === true) {
+  // get mask
+  const checkboxes = document.querySelectorAll('.button-mask');
+  for (let i = 0; i < checkboxes.length; i++) {
+    if (checkboxes[i].checked) {
+      const imgSrc = checkboxes[i].nextElementSibling.firstElementChild.getAttribute('src'); // get image source
+      store.maskPath = imgSrc;
+      // console.log("mask是!!")
+      console.log(store.maskPath)
+    }
+  }
+
+  // const container = document.querySelector(".mask-container");
+  // console.log(container)
+  // Foreground
+  if (isActiveF.value === true) {
+    // Foreground + Con
     if (isActiveCon.value === true) {
       console.log("F+C")
       let str3 = objectTextarea + descriptionTextarea + "F" + "C";
+      // New text
       if (!generationStateList.includes(str3)) {
         generationStateList.push(str3);
         let param = {
-          "num_to_generate": 4, "method_to_generate": "F", "guide": "C",
+          "num_to_generate": 4, "method_to_generate": "F", "location": "C", "mask": store.maskPath,
           "object": objectTextarea, "description": descriptionTextarea, "chart_type": chart_type
         };
         startGenerate(param, function (data) {
@@ -139,15 +174,16 @@ function clickButtonGenerate() {
             "object": objectTextarea,
             "description": descriptionTextarea,
             "generateMethod": "F",
-            "guide": "C",
+            "location": "C",
             "addRow": true,
             "imgList": data
           })
         });
       }
+      // Old text
       else {
         let param = {
-          "num_to_generate": store.generateNum, "method_to_generate": "F", "guide": "C",
+          "num_to_generate": store.generateNum, "method_to_generate": "F", "location": "C", "mask": store.maskPath,
           "object": objectTextarea, "description": descriptionTextarea, "chart_type": chart_type
         };
         startGenerate(param, function (data) {
@@ -155,20 +191,21 @@ function clickButtonGenerate() {
             "object": objectTextarea,
             "description": descriptionTextarea,
             "generateMethod": "F",
-            "guide": "C",
+            "location": "C",
             "addRow": false,
             "imgList": data
           })
         });
       }
     }
+    // Foreground + UNCon
     if (isActiveUNCon.value === true) {
       console.log("F+UNC")
       let str3 = objectTextarea + descriptionTextarea + "F" + "UNC";
       if (!generationStateList.includes(str3)) {
         generationStateList.push(str3);
         let param = {
-          "num_to_generate": 4, "method_to_generate": "F", "guide": "UNC",
+          "num_to_generate": 4, "method_to_generate": "F", "location": "UNC", 
           "object": objectTextarea, "description": descriptionTextarea, "chart_type": chart_type
         };
         startGenerate(param, function (data) {
@@ -176,7 +213,7 @@ function clickButtonGenerate() {
             "object": objectTextarea,
             "description": descriptionTextarea,
             "generateMethod": "F",
-            "guide": "UNC",
+            "location": "UNC",
             "addRow": true,
             "imgList": data
           })
@@ -184,7 +221,7 @@ function clickButtonGenerate() {
       }
       else {
         let param = {
-          "num_to_generate": store.generateNum, "method_to_generate": "F", "guide": "UNC",
+          "num_to_generate": store.generateNum, "method_to_generate": "F", "location": "UNC", 
           "object": objectTextarea, "description": descriptionTextarea, "chart_type": chart_type
         };
         startGenerate(param, function (data) {
@@ -192,47 +229,60 @@ function clickButtonGenerate() {
             "object": objectTextarea,
             "description": descriptionTextarea,
             "generateMethod": "F",
-            "guide": "UNC",
+            "location": "UNC",
             "addRow": false,
             "imgList": data
           })
         });
       }
     }
-
   };
 
-  if (isActiveBG.value === true) {
+  // Background
+  if (isActiveB.value === true) {
     if (isActiveCon.value === true) {
       let str3 = objectTextarea + descriptionTextarea + "B" + "C";
       if (!generationStateList.includes(str3)) {
         generationStateList.push(str3);
+        console.log("-----------------------------B+c")
         let param = {
-          "num_to_generate": 4, "method_to_generate": "B", "guide": "C",
+          "num_to_generate": 4, "method_to_generate": "B", "location": "C", "mask": store.maskPath,
           "object": objectTextarea, "description": descriptionTextarea, "chart_type": chart_type
         };
+        console.log(param);
         startGenerate(param, function (data) {
           eventBus.emit("isGenerate", {
             "object": objectTextarea,
             "description": descriptionTextarea,
             "generateMethod": "B",
-            "guide": "C",
+            "location": "C",
             "addRow": true,
             "imgList": data
           })
         });
+        // startGenerate(param, function (data) {
+        //   eventBus.emit("isGenerate", {
+        //     "object": objectTextarea,
+        //     "description": descriptionTextarea,
+        //     "generateMethod": "F",
+        //     "location": "C",
+        //     "addRow": true,
+        //     "imgList": data
+        //   })
+        // });
       }
       else {
         let param = {
-          "num_to_generate": store.generateNum, "method_to_generate": "B", "guide": "C",
+          "num_to_generate": store.generateNum, "method_to_generate": "B", "location": "C", "mask": store.maskPath,
           "object": objectTextarea, "description": descriptionTextarea, "chart_type": chart_type
         };
+        console.log(param);
         startGenerate(param, function (data) {
           eventBus.emit("isGenerate", {
             "object": objectTextarea,
             "description": descriptionTextarea,
             "generateMethod": "B",
-            "guide": "C",
+            "location": "C",
             "addRow": false,
             "imgList": data
           })
@@ -244,15 +294,16 @@ function clickButtonGenerate() {
       if (!generationStateList.includes(str3)) {
         generationStateList.push(str3);
         let param = {
-          "num_to_generate": 4, "method_to_generate": "B", "guide": "UNC",
+          "num_to_generate": 4, "method_to_generate": "B", "location": "UNC", 
           "object": objectTextarea, "description": descriptionTextarea, "chart_type": chart_type
         };
+        console.log(param);
         startGenerate(param, function (data) {
           eventBus.emit("isGenerate", {
             "object": objectTextarea,
             "description": descriptionTextarea,
             "generateMethod": "B",
-            "guide": "UNC",
+            "location": "UNC",
             "addRow": true,
             "imgList": data
           })
@@ -260,15 +311,16 @@ function clickButtonGenerate() {
       }
       else {
         let param = {
-          "num_to_generate": store.generateNum, "method_to_generate": "B", "guide": "UNC",
+          "num_to_generate": store.generateNum, "method_to_generate": "B", "location": "UNC", 
           "object": objectTextarea, "description": descriptionTextarea, "chart_type": chart_type
         };
+        console.log(param);
         startGenerate(param, function (data) {
           eventBus.emit("isGenerate", {
             "object": objectTextarea,
             "description": descriptionTextarea,
             "generateMethod": "B",
-            "guide": "UNC",
+            "location": "UNC",
             "addRow": false,
             "imgList": data
           })
@@ -280,43 +332,159 @@ function clickButtonGenerate() {
 
 
   // 全部都要变成false
-  isActiveFIS.value = isActiveFIM.value = false;
+  isActiveF.value = isActiveB.value = false;
   isActiveCon.value = isActiveUNCon.value = false;
 }
 
+function checkBothButtonsClicked() {
+  if (isActiveCon.value && isActiveF.value) {
+    readDataFromFolder()
+  }
+  if (isActiveCon.value && isActiveB.value) {
+    readDataFromFolder()
+  }
+}
+
+function readDataFromFolder() {
+  const container = document.querySelector(".mask-container");
+  if (isActiveCon.value === true && isActiveF.value === true && has_show_mask_foreground.value === false) {
+    container.innerHTML = ""; // clear previous mask
+    storeSetting.mask_path_foreground.forEach((image, index) => {
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.classList.add("button-mask");
+      checkbox.id = `mask${index + 1}`;
+
+      const label = document.createElement("label");
+      label.htmlFor = `mask${index + 1}`;
+
+      const img = document.createElement("img");
+      img.src = image;
+
+      label.appendChild(img);
+      container.appendChild(checkbox);
+      container.appendChild(label);
+    });
+    // Add CSS styles for the checkboxes and labels
+    const style = document.createElement("style");
+    style.innerHTML = `
+      input[type="checkbox"] { 
+        -webkit-appearance: none; 
+        -moz-appearance: none; 
+        appearance: none; 
+        display: none; 
+        visibility: hidden; 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+      } 
+
+      .button-mask+label img { 
+        width: 26px; 
+        height: 26px; 
+        border-radius: 10%; 
+        margin: 2px 2px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+      } 
+
+      .button-mask:checked+label { 
+        border: 2px solid #304FFE; 
+        border-radius: 10%; 
+      }`;
+    document.head.appendChild(style);
+    has_show_mask_foreground.value = true
+    has_show_mask_background.value = false
+  }
+  console.log(isActiveCon.value, isActiveB.value, has_show_mask_background.value)
+  if (isActiveCon.value === true && isActiveB.value === true && has_show_mask_background.value === false) {
+    container.innerHTML = ""; // clear previous mask
+    storeSetting.mask_path_background.forEach((image, index) => {
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.classList.add("button-mask");
+      checkbox.id = `mask${index + 1}`;
+
+      const label = document.createElement("label");
+      label.htmlFor = `mask${index + 1}`;
+
+      const img = document.createElement("img");
+      img.src = image;
+
+      label.appendChild(img);
+      container.appendChild(checkbox);
+      container.appendChild(label);
+    });
+    // Add CSS styles for the checkboxes and labels
+    const style = document.createElement("style");
+    style.innerHTML = `
+      input[type="checkbox"] { 
+        -webkit-appearance: none; 
+        -moz-appearance: none; 
+        appearance: none; 
+        display: none; 
+        visibility: hidden; 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+      } 
+
+      .button-mask+label img { 
+        width: 26px; 
+        height: 26px; 
+        border-radius: 10%; 
+        margin: 2px 2px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+      } 
+
+      .button-mask:checked+label { 
+        border: 2px solid #304FFE; 
+        border-radius: 10%; 
+      }`;
+    document.head.appendChild(style);
+    has_show_mask_background.value = true
+    has_show_mask_foreground.value = false
+  }
+}
+
 onMounted(() => {
+  // backTracking
   eventBus.on("backTracking", (data) => {
     console.log('-----')
-    console.log(store.objectText, store.descriptionText, store.generateMethod, store.guide)
+    console.log(store.objectText, store.descriptionText, store.generateMethod, store.location)
     const objectInput = document.querySelector('.object-input');
     objectInput.value = store.objectText;
     const descriptionInput = document.querySelector('.description-input');
     descriptionInput.value = store.descriptionText;
     const buttonFE = document.querySelector(".embed-fore-ex-rect");
-    if (store.generateMethod === "FE") {
+    if (store.generateMethod === "F") {
       // console.log("没写出来, 需要label亮起来")
-      isActiveFE.value = true;
+      isActiveF.value = true;
       buttonFE.click();
     }
     const buttonBG = document.querySelector(".embed-bg-rect");
     if (store.generateMethod === "B") {
       // console.log("没写出来, 需要label亮起来")
-      isActiveFIS.value = true;
+      isActiveB.value = true;
       buttonBG.click();
     }
-    const buttonCon = document.querySelector(".btn-con");
-    if (store.generateMethod === "B") {
+    const buttonCon = document.querySelector(".btn_con");
+    if (store.location === "UNC") {
       // console.log("没写出来, 需要label亮起来")
-      isActiveFIS.value = true;
+      isActiveUNCon.value = true;
       buttonCon.click();
     }
-    const buttonUNCon = document.querySelector(".btn-con1");
-    if (store.generateMethod === "B") {
+    const buttonUNCon = document.querySelector(".btn_uncon");
+    if (store.location === "C") {
       // console.log("没写出来, 需要label亮起来")
-      isActiveFIS.value = true;
+      isActiveCon.value = true;
       buttonUNCon.click();
     }
-
   });
 })
 
@@ -403,7 +571,7 @@ textarea:focus {
 }
 
 .button-8 {
-  width: 90%;
+  width: 88%;
   height: 30px;
   background-color: #3E3E3E; //e1ecf4
   border-radius: 5px;
@@ -420,7 +588,7 @@ textarea:focus {
   font-size: 16px;
   font-weight: 560;
   line-height: 1.15385;
-  margin: 5px;
+  margin-top: 0px;
   outline: none;
   text-decoration: none;
   user-select: none;
@@ -474,35 +642,8 @@ textarea:focus {
   color: #C84444;
   margin-left: 15px;
   background-color: #ffffff;
-  // border: none;
-  // border-radius: 10px;
-  // color: rgb(17, 17, 17);
-  // padding: 4px 4px;
-  // padding-left: 18px;
-  // padding-right: 20px;
-  // font-size: 14px;
-  // border: 1.5px solid #a2a2a2;
-  // cursor: pointer;
-  // // margin-right: px;
-  // font-weight: 540;
-  // margin-top: 1px;
-  // margin-bottom: 5px;
-  // height: 23px;
 }
 
-// .embed-bg-rect::before {
-//   content: "";
-//   position: absolute;
-//   left: 0;
-//   top: 50%;
-//   transform: translate(0, -50%);
-//   width: 7px;
-//   height: 7px;
-//   border-radius: 50%;
-//   // background-color: black;
-//   border: 1.5px solid #C84444;
-//   margin-left: 8px;
-// }
 
 .embed-bg-rect.active {
   background-color: #F5CAC2;
@@ -563,6 +704,75 @@ textarea:focus {
   border: 15px;
   border-color: #a1a1a1;
   // border: 1.5px solid #a2a2a2;
+}
+
+// mask
+.mask-container {
+  width: 90%;
+  // height: 30px;
+  background-color: #ffffff; //e1ecf4
+  border-radius: 5px;
+  border: 0px solid #EEF9FF; //#7aa7c7
+  box-sizing: border-box;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  /* 垂直居中 */
+  justify-content: center;
+  /* 水平居中 */
+  font-family: -apple-system, system-ui, "Segoe UI", "Liberation Sans", sans-serif;
+  margin: 2px;
+  outline: none;
+  margin-left: 15px;
+}
+
+// .button-mask {
+//   background-color: transparent;
+//   background-color: #ffffff; //e1ecf4
+//   border: none;
+//   cursor: pointer;
+//   padding: 5px;
+//   margin: 0 5px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+
+// .button-mask img {
+//   width: 26px;
+//   height: 26px;
+//   object-fit: cover;
+//   border-radius: 10%;
+// }
+
+// mask 没用，得写在script里面
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: none;
+  visibility: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.button-mask+label img {
+  width: 26px;
+  height: 26px;
+  border-radius: 10%;
+  margin: 2px 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-mask:checked+label {
+  border: 2px solid #304FFE;
+  border-radius: 10%;
 }
 
 // .btn svg {

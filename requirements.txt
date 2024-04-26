@@ -11,3 +11,10 @@ tokenizers==0.13.1
 torch==1.12.1
 torchvision==0.13.1
 tqdm==4.64.1
+gensim==4.3.2
+wordcloud==1.9.3
+scipy==1.11.1
+diffusers==0.25.1
+keybert==0.7.0
+
+

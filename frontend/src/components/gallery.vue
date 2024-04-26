@@ -72,26 +72,29 @@ function clickRow(event) {
 
 onMounted(() => {
     eventBus.on("isGenerate", (data) => {
-        // console.log(data)
+        console.log(data)
         // console.log(store.generationStateList)
         store.objectText = data.object;
         store.descriptionText = data.description;
         store.generateMethod = data.generateMethod;
+        store.location = data.location;
         // const c = JSON.stringify(data.addRow)
         if (data.addRow == true) {
             // console.log(data.addRow)
             console.log("yes, add a row")
-            setTimeout(()=>{addRow(data)}, 2000);
+            addRow(data);
         }
         else {
             // console.log(data.addRow)
             console.log("no, not a row")
-            setTimeout(()=>{modifyRow(data)}, 1200);
+            modifyRow(data);
         }
     });
     eventBus.on("isRefine", (data) => {
-        console.log("refine!")
-        setTimeout(()=>{addRefine(data)}, 1500);
+        console.log(data);
+        console.log("refine!");
+        // setTimeout(()=>{addRefine(data)}, 1500);
+        addRefine(data);
     });
 })
 
@@ -113,7 +116,7 @@ function modifyRow(data) {
     // });
     items.forEach(item => {
         if (!item.querySelector('img')) {
-            item.innerHTML = `<img src=${data.imgList[i]} alt="这是一张图片">` + item.innerHTML;
+            item.innerHTML = `${data.imgList[i]}` + item.innerHTML;
             i++;
         }
     });
@@ -122,8 +125,8 @@ function modifyRow(data) {
         const img = button.previousElementSibling;
         img.addEventListener('click', () => {
             fabric.Image.fromURL(img.src, function (imgInstance) {
-                imgInstance.set({  // 设置图片属性
-                    name: data.object // 添加名字
+                imgInstance.set({  
+                    name: data.object 
                 });
                 canvas.c.add(imgInstance);
             });
@@ -134,103 +137,6 @@ function modifyRow(data) {
         });
     });
 
-}
-
-const addRow = (data) => {
-    // Get the gallery element
-    const gallery = document.querySelector('.gallery');
-
-    // Create a new gallery-row element 
-    const newRow = document.createElement('div');
-    newRow.classList.add('gallery-row');
-    newRow.addEventListener('click', clickRow);
-
-    // Add the info element to the new row
-    const newInfo = document.createElement('div');
-    newInfo.classList.add('info');
-    // <img src=${data.imgList[0]}>  
-    newInfo.innerHTML = `
-  <div class="object-info">${data.object}</div>  
-  <div class="description-info">${data.description}</div>  
-  <div style="display: flex;">
-  <button class="generate-method-${data.generateMethod}"><strong>${data.generateMethod}</strong></button>  
-  <button class="guide-C"><strong>${data.guide}</strong></button>  
-</div>
-`;
-    newRow.appendChild(newInfo);
-
-    // Add the gallery-group element to the new row
-    const newGalleryGroup = document.createElement('div');
-    newGalleryGroup.classList.add('gallery-group');
-    newGalleryGroup.innerHTML = `
-  <div class="gallery-item">  
-    <img src=${data.imgList[0]} alt="这是一张图片">
-    <button class="gallery-item-button" role="button">X</button>  
-  </div>  
-  <div class="gallery-item">  
-    <img src=${data.imgList[1]} alt="这是一张图片">
-    <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
-  </div>  
-  <div class="gallery-item">  
-    <img src=${data.imgList[2]} alt="这是一张图片">
-    <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
-  </div>  
-  <div class="gallery-item">  
-    <img src=${data.imgList[3]} alt="这是一张图片">
-    <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
-  </div>  
-`;
-    newRow.appendChild(newGalleryGroup);
-
-    // 给img加上监听事件
-    const galleryRows = document.querySelectorAll('.gallery-row');
-    for (let i = 0; i < galleryRows.length; i++) {
-        console.log(i)
-        const img = galleryRows[i].querySelector('img');
-        img.addEventListener('click', () => {
-            // const imgInstance = new fabric.Image(img, {
-            //     id: uuid(),
-            //     name: '图片1',
-            //     left: 100, top: 100,
-            // });
-            // canvas.c.add(imgInstance)
-            // canvas.c.setActiveObject(imgInstance);
-            // canvas.c.renderAll()
-            console.log("点击img")
-        });
-    }
-
-    // Insert the new row before the first row 
-    const firstRow = gallery.querySelector('.gallery-row');
-    gallery.insertBefore(newRow, firstRow);
-
-    function removeImg(button) {
-        console.log("remove it?")
-        console.log(button.parentNode)
-        button.parentNode.remove();
-    }
-
-    const imgButtons = newRow.querySelectorAll('.gallery-item-button');
-    // imgButtons.forEach(button => {
-    //     button.addEventListener('click', () => {
-    //         button.parentNode.remove();
-    //     });
-    // });
-    imgButtons.forEach(button => {
-        const img = button.previousElementSibling;
-        img.addEventListener('click', () => {
-            fabric.Image.fromURL(img.src, function (imgInstance) {
-                imgInstance.set({  // 设置图片属性
-                    id: data.object // 添加名字
-                });
-                canvas.c.add(imgInstance);
-            });
-        });
-        button.addEventListener('click', () => {
-            img.remove();
-            // button.remove(); 
-        });
-    });
 }
 
 const addRefine = (data) => {
@@ -255,19 +161,19 @@ const addRefine = (data) => {
     newGalleryGroup.classList.add('gallery-group');
     newGalleryGroup.innerHTML = `
   <div class="gallery-item">  
-    <img src=${data.imgList[0]} alt="这是一张图片">
+    ${data.imgList[0]}
     <button class="gallery-item-button" role="button">X</button>  
   </div>  
   <div class="gallery-item">  
-    <img src=${data.imgList[1]} alt="这是一张图片">
+    ${data.imgList[1]}
     <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
   </div>  
   <div class="gallery-item">  
-    <img src=${data.imgList[2]} alt="这是一张图片">
+    ${data.imgList[2]}
     <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
   </div>  
   <div class="gallery-item">  
-    <img src=${data.imgList[3]} alt="这是一张图片">
+    ${data.imgList[3]}
     <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
   </div>  
 `;
@@ -313,6 +219,103 @@ const addRefine = (data) => {
             fabric.Image.fromURL(img.src, function (imgInstance) {
                 imgInstance.set({  // 设置图片属性
                     id: data.object // 添加名字
+                });
+                canvas.c.add(imgInstance);
+            });
+        });
+        button.addEventListener('click', () => {
+            img.remove();
+            // button.remove(); 
+        });
+    });
+}
+
+const addRow = (data) => {
+    // Get the gallery element
+    const gallery = document.querySelector('.gallery');
+
+    // Create a new gallery-row element 
+    const newRow = document.createElement('div');
+    newRow.classList.add('gallery-row');
+    newRow.addEventListener('click', clickRow);
+
+    // Add the info element to the new row
+    const newInfo = document.createElement('div');
+    newInfo.classList.add('info');
+    // <img src=${data.imgList[0]}>  
+    newInfo.innerHTML = `
+  <div class="object-info">${data.object}</div>  
+  <div class="description-info">${data.description}</div>  
+  <div>
+  <button class="generate-method-${data.generateMethod}" style="display: inline-block;"><strong>${data.generateMethod}</strong></button>  
+  <button class="btn_${data.location}" style="display: inline-block;"><strong>${data.location}</strong></button> 
+</div>  
+  `;
+    newRow.appendChild(newInfo);
+
+    // Add the gallery-group element to the new row
+    const newGalleryGroup = document.createElement('div');
+    newGalleryGroup.classList.add('gallery-group');
+    newGalleryGroup.innerHTML = `
+  <div class="gallery-item">  
+    ${data.imgList[0]}
+    <button class="gallery-item-button" role="button">X</button>  
+  </div>  
+  <div class="gallery-item">  
+    ${data.imgList[1]}
+    <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
+  </div>  
+  <div class="gallery-item">  
+    ${data.imgList[2]}
+    <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
+  </div>  
+  <div class="gallery-item">  
+    ${data.imgList[3]}
+    <button class="gallery-item-button" role="button" @click="clickButton">X</button>  
+  </div>  
+`;
+    newRow.appendChild(newGalleryGroup);
+
+    // 给img加上监听事件
+    const galleryRows = document.querySelectorAll('.gallery-row');
+    for (let i = 0; i < galleryRows.length; i++) {
+        console.log(i)
+        const img = galleryRows[i].querySelector('img');
+        img.addEventListener('click', () => {
+            // const imgInstance = new fabric.Image(img, {
+            //     id: uuid(),
+            //     name: '图片1',
+            //     left: 100, top: 100,
+            // });
+            // canvas.c.add(imgInstance)
+            // canvas.c.setActiveObject(imgInstance);
+            // canvas.c.renderAll()
+            console.log("点击img")
+        });
+    }
+
+    // Insert the new row before the first row 
+    const firstRow = gallery.querySelector('.gallery-row');
+    gallery.insertBefore(newRow, firstRow);
+
+    function removeImg(button) {
+        console.log("remove it?")
+        console.log(button.parentNode)
+        button.parentNode.remove();
+    }
+
+    const imgButtons = newRow.querySelectorAll('.gallery-item-button');
+    // imgButtons.forEach(button => {
+    //     button.addEventListener('click', () => {
+    //         button.parentNode.remove();
+    //     });
+    // });
+    imgButtons.forEach(button => {
+        const img = button.previousElementSibling;
+        img.addEventListener('click', () => {
+            fabric.Image.fromURL(img.src, function (imgInstance) {
+                imgInstance.set({  // 设置图片属性
+                    name: data.object // 添加名字
                 });
                 canvas.c.add(imgInstance);
             });
@@ -432,56 +435,55 @@ const addRefine = (data) => {
 .generate-method-F {
     // margin-left: -2px;
     background-color: #CDE7F8;
-    width: 75px;
+    // width: 35%;
     height: 20px;
     border: 0px solid #5B97BD;
     border-radius: 10px;
-    display: flex;
-    font-size: 10px;
+    // display: flex;
+    font-size: 13px;
     font-weight: 540;
-    padding-left: 27px;
-    padding-right: 20px;
+    padding-left: 17px;
+    padding-right: 17px;
     color: #2F75A1;
-    position: relative;
+    // position: relative;
     margin-top: 2px;
-    margin-right: 10px;
     text-align: center;
     justify-content: center;
     align-items: center;
 }
 
-.generate-method-F::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translate(0, -50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background-color: #5B97BD;
-    // border: 1.5px solid #5B97BD;
-    margin-left: 8px;
-}
+// .generate-method-F::before {
+//     content: "";
+//     position: absolute;
+//     left: 0;
+//     top: 50%;
+//     transform: translate(0, -50%);
+//     width: 5px;
+//     height: 5px;
+//     border-radius: 50%;
+//     background-color: #5B97BD;
+//     // border: 1.5px solid #5B97BD;
+//     margin-left: 8px;
+// }
 
 .generate-method-B {
-    // margin-left: -2px;
     background-color: #F5CAC2;
-    width: 75px;
+    // width: 35%;
     height: 20px;
     border: 0px solid #C84444;
     border-radius: 10px;
-    display: flex;
-    font-size: 10px;
+    // display: flex;
+    font-size: 13px;
     font-weight: 540;
-    padding-left: 27px;
-    padding-right: 20px;
+    padding-left: 17px;
+    padding-right: 17px;
     color: #C84444;
-    position: relative;
+    // position: relative;
     margin-top: 2px;
     text-align: center;
     justify-content: center;
     align-items: center;
+
 }
 
 .generate-method-B::before {
@@ -498,39 +500,36 @@ const addRefine = (data) => {
     margin-left: 8px;
 }
 
-.guide-C {
-    // margin-left: -2px;
-    background-color: #e2e2e2;
-    width: 75px;
+.btn_C {
+    background-color: #cccccc;
     height: 20px;
-    border: 0px solid #ababab;
     border-radius: 10px;
-    display: flex;
-    font-size: 10px;
+    border: 0px;
+    font-size: 13px;
     font-weight: 540;
-    padding-left: 27px;
-    padding-right: 20px;
-    color: #383838;
-    position: relative;
+    padding-left: 17px;
+    padding-right: 17px;
     margin-top: 2px;
     text-align: center;
     justify-content: center;
     align-items: center;
 }
 
-.guide-C::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translate(0, -50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background-color: #ababab;
-    // border: 1.5px solid #5B97BD;
-    margin-left: 8px;
+.btn_UNC {
+    background-color: #cccccc;
+    height: 20px;
+    border-radius: 10px;
+    border: 0px;
+    font-size: 13px;
+    font-weight: 540;
+    padding-left: 17px;
+    padding-right: 17px;
+    margin-top: 2px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
 }
+
 
 
 .gallery-item {

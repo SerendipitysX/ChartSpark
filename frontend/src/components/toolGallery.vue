@@ -9,24 +9,6 @@
 <template>
     <div class="toolGallery">
     <div class="container">
-            <button class="btn_g" @click="extend">
-                <!-- <svg t="1679891474114" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                p-id="2849" width="200" height="200">
-                                <path
-                                    d="M99.5 284.8h61.3v-74l260.3 260.3 43.4-43.4L198.8 162h84.8v-61.4H99.5zM869.1 825.8L603.4 560 560 603.4l260.3 260.4h-73.9v61.3h184.1V741h-61.4zM160.1 742.4H98.7v184.1h184.2v-61.3h-68.6l263.1-263.1-43.4-43.4-273.9 273.9zM742 102v61.3h90.2l-263 263.1 43.4 43.4 252.2-252.2v68.5h61.4V102z"
-                                    fill="#333333" p-id="2850">
-                                </path>
-                            </svg> -->
-                <svg t="1680204227560" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                    p-id="4232">
-                    <path
-                        d="M192 160a32 32 0 0 0-32 32v192a32 32 0 0 0 32 32h192a32 32 0 0 0 32-32V192a32 32 0 0 0-32-32H192z m0-64h192a96 96 0 0 1 96 96v192a96 96 0 0 1-96 96H192a96 96 0 0 1-96-96V192a96 96 0 0 1 96-96zM192 608a32 32 0 0 0-32 32v192a32 32 0 0 0 32 32h192a32 32 0 0 0 32-32v-192a32 32 0 0 0-32-32H192z m0-64h192a96 96 0 0 1 96 96v192a96 96 0 0 1-96 96H192a96 96 0 0 1-96-96v-192a96 96 0 0 1 96-96zM640 608a32 32 0 0 0-32 32v192a32 32 0 0 0 32 32h192a32 32 0 0 0 32-32v-192a32 32 0 0 0-32-32h-192z m0-64h192a96 96 0 0 1 96 96v192a96 96 0 0 1-96 96h-192a96 96 0 0 1-96-96v-192a96 96 0 0 1 96-96zM602.272 266.272a32 32 0 0 0 0 45.28l112 112a32 32 0 0 0 45.28 0l112-112a32 32 0 0 0 0-45.28l-112-112a32 32 0 0 0-45.28 0l-112 112z m-45.248-45.248l112-112a96 96 0 0 1 135.776 0l112 112a96 96 0 0 1 0 135.776l-112 112a96 96 0 0 1-135.776 0l-112-112a96 96 0 0 1 0-135.776z"
-                        fill="#6C6D6E" p-id="4233">
-
-                    </path>
-                </svg>
-            </button>
-
             <button class="btn_g" @click="refine">
                 <svg t="1679892220746" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     p-id="3115" width="200" height="200">
@@ -139,6 +121,7 @@ const object = ref("object")
 const description = ref("description")
 const generateLabel = ref("xx")
 const eventBus = inject("eventBus")
+import { startRefine } from '../service/dataService';
 const isAddRow = ref(false);
 let mSelectMode = inject('mSelectMode')
 let mSelectOneType = inject('mSelectOneType')
@@ -161,15 +144,45 @@ let zoom = ref(0)
 
 
 function refine() {
-    eventBus.emit("isRefine", {
-        "object": "",
-        "description": "",
-        "generateMethod": "",
-        "guide": "REFINE",
-        "addRow": true,
-        "imgList": ["/src/assets/generation/refine/11.png", "/src/assets/generation/refine/22.png", "/src/assets/generation/refine/33.png",
-            "/src/assets/generation/refine/44.png"]
-    });
+    var activeObj = canvas.c.getActiveObject();
+    localStorage.setItem('activeObj', JSON.stringify(activeObj));
+    // console.log(activeObj)
+    var dataURL = JSON.parse(localStorage.getItem('activeObj'));
+    console.log("===")
+    // console.log(dataURL);
+    var dataURL = canvas.c.toDataURL({
+                    format: 'png',
+                    left: activeObj.left,
+                    top: activeObj.top,
+                    width: activeObj.width,
+                    height: activeObj.height
+                    });
+    // const data = dataURL.replace(/^data:image\/\w+;base64,/, '');
+    let param = {
+          "num_to_generate": 4, "object": "", "description": "", data: dataURL
+        };
+    startRefine(param, function (data) {
+        eventBus.emit("isRefine", {
+            "object": "",
+            "description": "",
+            "generateMethod": "",
+            "location": "",
+            "guide": "REFINE",
+            "addRow": true,
+            "imgList": data
+          })
+        });
+
+
+    // eventBus.emit("isRefine", {
+    //     "object": "",
+    //     "description": "",
+    //     "generateMethod": "",
+    //     "guide": "REFINE",
+    //     "addRow": true,
+    //     "imgList": ["/src/assets/generation/refine/11.png", "/src/assets/generation/refine/22.png", "/src/assets/generation/refine/33.png",
+    //         "/src/assets/generation/refine/44.png"]
+    // });
 }
 
 

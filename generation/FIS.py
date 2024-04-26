@@ -32,13 +32,9 @@ from mask.bg_removal import bg_removal
 
 def text2img_func(pipe_text2img, prompt, figure_size):
     print(figure_size)
-    # prompt = "top view of a single pumpkin, close up"
-    # prompt = "A single blueberry, round, sweet fruit with a blue-black skin and juicy flesh that is high in antioxidants."
-    # prompt = "A single bluberry, close up"
-    # images = pipe_img2img(prompt=prompt, image=init_image, strength=0.75, guidance_scale=7.5).images
     image_text2img = pipe_text2img(prompt=prompt, width=figure_size[0], height=figure_size[1], guidance_scale=7.5).images[0]
     num = random.randint(0, 100)
-    image_text2img.save("D:/speak/generation/output/"+prompt+str(num)+".png")
+    image_text2img.save("C:/Users/user/A-project/speak/generation/output/"+prompt+str(num)+".png")
     return image_text2img
 
 def image_grid(imgs, rows, cols):
@@ -74,7 +70,6 @@ def get_attetnion_crop(bar_image,image_text2img):
     x,y,w,h = cv2.boundingRect(cntr)
     img_blend = img_blend.crop((x,y,x+w,y+h))
     img_blend # 只有bar的那一部分
-    ### 放在黑底背景上
     im_bg = Image.new("RGB", (512, 512),color="black")
     # resize the object to maintain the detail
     # resize to 512 if we need generate
@@ -117,58 +112,16 @@ def img_bg_removal(images):
         images_rm.append(image)
     return images_rm
 
-# 得考虑是第一次生成还是再次生成
 def FIS_bar(prompt, bar_mask, num_to_generate, figure_size, pipe_text2img, pipe_img2img, pipe_depth):
     if num_to_generate==4:
         images_depth2img = depth2img_func(pipe_depth, prompt, bar_mask, num_images=4)
         img_bg_depth2img = img_bg_removal(images_depth2img)
         return img_bg_depth2img
-        # # step1 text2img
-        # img_text2img = text2img_func(pipe_text2img, prompt, (512, 512))
-        # # step2 blend(text2img+bar_mask)
-        # random_number = random.uniform(0.6, 0.8)
-        # img_blend = Image.blend(bar_mask,img_text2img, random_number)
-        # cntr = get_locate(bar_mask)
-        # x,y,w,h = cv2.boundingRect(cntr)
-        # img_blend = img_blend.crop((x,y,x+w,y+h))
-        # img_blend # 只有bar的那一部分
-        # ### 放在黑底背景上 不然分辨率太低了
-        # im_bg = Image.new("RGB", (512, 512),color="black")
-        # im_bg.paste(img_blend, (int(512/2-w/2), int(512/2-h/2)))
-        # # step3 img2img & depth2img
-        # images_img2img = img2img_func(pipe_img2img, prompt, im_bg, num_images=2)
-        # images_depth2img = depth2img_func(pipe_depth, prompt, im_bg, num_images=2)
-        # # step4 bg removal
-        # img_bg_img2img = img_bg_removal(images_img2img)
-        # img_bg_depth2img = img_bg_removal(images_depth2img)
-        # return img_bg_img2img+img_bg_depth2img
     if num_to_generate!=4:
         images_depth2img = depth2img_func(pipe_depth, prompt, bar_mask, num_images=num_to_generate)
         img_bg_depth2img = img_bg_removal(images_depth2img)
         return img_bg_depth2img
 
-        # step1 text2img
-        # img_text2img = text2img_func(pipe_text2img, prompt, figure_size)
-        # # step2 blend(text2img+bar_mask)
-        # random_number = random.uniform(0.6, 0.8)
-        # img_blend = Image.blend(bar_mask,img_text2img, random_number)
-        # cntr = get_locate(bar_mask)
-        # x,y,w,h = cv2.boundingRect(cntr)
-        # img_blend = img_blend.crop((x,y,x+w,y+h))
-        # img_blend # 只有bar的那一部分
-        # ### 放在黑底背景上 不然分辨率太低了
-        # im_bg = Image.new("RGB", (512, 512),color="black")
-        # im_bg.paste(img_blend, (int(512/2-w/2), int(512/2-h/2)))
-        # # step3 img2img & depth2img
-        # random_number = random.random()
-        # if random_number > 0.5:
-        #     images_img2img = img2img_func(pipe_img2img, prompt, im_bg, num_images=num_to_generate)
-        #     img_bg_img2img = img_bg_removal(images_img2img)
-        #     return img_bg_img2img
-        # else:
-        #     images_depth2img = depth2img_func(pipe_depth, prompt, im_bg, num_images=num_to_generate)
-        #     img_bg_depth2img = img_bg_removal(images_depth2img)
-        #     return img_bg_depth2img
         
 def FIS_line(prompt, line_mask, num_to_generate, figure_size, pipe_text2img, pipe_img2img, pipe_depth):
     if num_to_generate==4:
@@ -208,7 +161,7 @@ def FIS_line(prompt, line_mask, num_to_generate, figure_size, pipe_text2img, pip
 
 def FIS_pie(prompt, ratio, num_to_generate, figure_size, pipe_text2img, pipe_img2img, pipe_depth):
     if num_to_generate==4:
-        # step1 text2img
+        # step1 text2img  
         img_text2img = text2img_func(pipe_text2img, prompt, figure_size)
         # step2 blend(text2img+line_mask) crop
         pie_mask_circle = draw_circle(ratio=1)

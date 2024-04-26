@@ -4,45 +4,18 @@ This repository contains the code of *ChartSpark*, a novel system that embeds se
 *ChartSpark* generates pictorial visualizations conditioned on both semantic context conveyed in textual inputs and data information embedded in plain charts. The method is generic for both foreground and background pictorial generation, satisfying the design practices identified from an empirical research into existing pictorial visualizations.
 We further develop an interactive visual interface that integrates a text analyzer, editing module, and evaluation module to enable users to generate, modify, and assess pictorial visualizations.
 
-![teaser.png](asset/teaser.png)
+<!-- ![teaser.png](asset/teaser.png) -->
 
 ![interface.png](asset/interface.png)
 
 ![case.png](asset/case.png)
-
-## Code release progress:
-
-**Todo:**
-
-- Affine transformation
-- Refinement
-- Replication
-- Instruction for Backend Setup
-- Instruction for Frontend Setup
-
-Done:
-
-- Environment
-- Pretrained model
-- mask of chart
-- Interface
-- Semantic context exrtaction
-- Attention map extraction
-- Unconditional & conditional generation
-
-## **Data Corpus**
-We collected 689 pictorial visualization in total, which can be find [here](https://drive.google.com/drive/folders/11ELKOwPXb92hXiYgG46_Dcw1cfIHh5p_?usp=share_link)
-- Foreground internal single: 395
-- Foreground internal multiple: 290
-- Foreground external: 121
-- Background: 63
 
 ## **Dependencies and Installation**
 
 ```bash
 gitclone https://github.com/SerendipitysX/ChartSpark.git
 cd ChartSpark
-****conda create --name <environment_name> --file requirements.txt
+conda create --name <environment_name> --fisle requirements.txt
 ```
 
 ## Pretrained Model
@@ -51,9 +24,48 @@ In this work, we benefit from some excellent pretrained models, including [WebVe
 
 To use these models, please follow the steps below:
 
-1. Download the removal pretrained models from [here](https://drive.google.com/drive/folders/1o-VFpRX7wmBgeVXQ75lAOOoj5bLh8s5Y?usp=share_link),  unzip the folder and save it to `mask/`.
-2. Select one of corpus from [WebVectors](http://vectors.nlpl.eu/explore/embeddings/en/models/) and save it to theme_extract `theme_extract/`.
+1. **Generation**: We use three pipline from diffusers: `runwayml/stable-diffusion-v1-5`, `stabilityai/stable-diffusion-2-depth`, and `Fantasy-Studio/Paint-by-Example`. You can download and load them as local files, which can be specified in `chartSpeak.py line 37-44`.
+2. **Removal**: Download the removal pretrained models from [here](https://drive.google.com/file/d/1XHIzgTzY5BQHw140EDIgwIb53K659ENH/view),  unzip the folder and save it to `mask/bg_removal.pth`.
+3. **Extract Keyword (Optional)**: Select one of corpus from [WebVectors](http://vectors.nlpl.eu/explore/embeddings/en/models/) and save it to theme_extract `theme_extract/`. You will have three files: `meta.json`, `model.bin`, `model.txt`.
+
+## Backend Setup
+```
+python chartSpeak.py
+```
+
+## Frontend Setup
+1. Go to ChartSpark/frontend path
+2. Install all the needed packages through npm
+```
+npm install
+```
+3. Compiles and hot-reloads for development
+```
+npm run dev
+```
 
 ## **Contact**
 
 We are glad to hear from you. If you have any questions, please feel free to contact [xrakexss@gmail.com](mailto:xrakexss@gmail.com) or open issues on this repository.
+
+## **Acknowledgement**
+Thanks for the great interface reference in https://github.com/nihaojob/vue-fabric-editor
+
+## Citation
+```
+@ARTICLE {xiao2023ChartSpark,
+author = {S. Xiao and S. Huang and Y. Lin and Y. Ye and W. Zeng},
+journal = {IEEE Transactions on Visualization &amp; Computer Graphics},
+title = {Let the Chart Spark: Embedding Semantic Context into Chart with Text-to-Image Generative Model},
+year = {2024},
+volume = {30},
+number = {01},
+issn = {1941-0506},
+pages = {284-294},
+doi = {10.1109/TVCG.2023.3326913},
+publisher = {IEEE Computer Society},
+address = {Los Alamitos, CA, USA},
+month = {jan}
+}
+```
+
