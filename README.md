@@ -47,25 +47,3 @@ npm run dev
 ## **Contact**
 
 We are glad to hear from you. If you have any questions, please feel free to contact [xrakexss@gmail.com](mailto:xrakexss@gmail.com) or open issues on this repository.
-
-## **Acknowledgement**
-Thanks for the great interface reference in https://github.com/nihaojob/vue-fabric-editor
-
-## Citation
-```
-@ARTICLE {xiao2023ChartSpark,
-author = {S. Xiao and S. Huang and Y. Lin and Y. Ye and W. Zeng},
-journal = {IEEE Transactions on Visualization &amp; Computer Graphics},
-title = {Let the Chart Spark: Embedding Semantic Context into Chart with Text-to-Image Generative Model},
-year = {2024},
-volume = {30},
-number = {01},
-issn = {1941-0506},
-pages = {284-294},
-doi = {10.1109/TVCG.2023.3326913},
-publisher = {IEEE Computer Society},
-address = {Los Alamitos, CA, USA},
-month = {jan}
-}
-```
-
