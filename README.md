@@ -31,6 +31,7 @@ python chartSpeak.py
 ```
 
 ## Frontend Setup
+see this video for real-world usage：[video](https://youtu.be/CeKCCFhZnw0?si=EigEFcelssTVUGLO)
 1. Go to ChartSpark/frontend path
 2. Install all the needed packages through npm
 ```
